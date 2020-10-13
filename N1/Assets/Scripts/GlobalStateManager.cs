@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 
-public class GlobalStateManager : MonoBehaviour
+public class GlobalStateManager : NetworkBehaviour
 {
     public void onPlayerDeath()
     {

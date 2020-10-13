@@ -1,10 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Mirror;
 
-public class DestroySelf : MonoBehaviour
+public class DestroySelf : NetworkBehaviour
 {
     void Start()
     {
-        Destroy(gameObject, 3f);
+        Invoke("DisableCollider", .05f);
+        Invoke("DestroyServerObject", 1);
+    }
+
+    private void DisableCollider()
+    {
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+    }
+
+    private void DestroyServerObject()
+    {
+        NetworkServer.Destroy(gameObject);
     }
 }

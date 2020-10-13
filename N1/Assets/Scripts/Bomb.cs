@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using Mirror;
 
-public class Bomb : MonoBehaviour
+public class Bomb : NetworkBehaviour
 {
-    public AudioClip explosionSound;
-    public GameObject explosionPrefab;
-    public LayerMask levelMask;
-    private bool exploded = false;
+    public AudioClip m_explosionSound;
+    public GameObject m_explosionPrefab;
+    public LayerMask m_levelMask;
+    private bool m_exploded = false;
 
     void Start()
     {
@@ -16,42 +17,48 @@ public class Bomb : MonoBehaviour
 
     void Explode()
     {
-        AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+        if(!NetworkServer.active)
+            return;
 
-        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        AudioSource.PlayClipAtPoint(m_explosionSound, transform.position);
 
-        StartCoroutine(CreateExplosions(Vector3.forward));
-        StartCoroutine(CreateExplosions(Vector3.right));
-        StartCoroutine(CreateExplosions(Vector3.back));
-        StartCoroutine(CreateExplosions(Vector3.left));
+        NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position, Quaternion.identity));
+
+        CreateExplosions(Vector3.forward);
+        CreateExplosions(Vector3.right);
+        CreateExplosions(Vector3.back);
+        CreateExplosions(Vector3.left);
 
         GetComponent<MeshRenderer>().enabled = false;
-        exploded = true; 
+        m_exploded = true; 
         transform.Find("Collider").gameObject.SetActive(false);
-        Destroy(gameObject, .3f);
+        Invoke("DestroyServerObject", .3f);
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        if(!exploded && other.CompareTag("Explosion")) {
+        if(!m_exploded && other.CompareTag("Explosion")) {
             CancelInvoke("Explode");
             Explode();
         }
     }
 
-    private IEnumerator CreateExplosions(Vector3 direction)
+    private void CreateExplosions(Vector3 direction)
     {
         for(int i = 1; i < 3; i++) {
             RaycastHit hit;
 
-            Physics.Raycast(transform.position + new Vector3(0, .5f, 0), direction, out hit, i, levelMask);
+            Physics.Raycast(transform.position + new Vector3(0, .5f, 0), direction, out hit, i, m_levelMask);
 
             if(!hit.collider)
-                Instantiate(explosionPrefab, transform.position + (i * direction), explosionPrefab.transform.rotation);
+                NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position + (i * direction), m_explosionPrefab.transform.rotation));
             else
                 break;
-
-            yield return new WaitForSeconds(.05f);
         }
+    }
+
+    private void DestroyServerObject()
+    {
+        NetworkServer.Destroy(gameObject);
     }
 }
