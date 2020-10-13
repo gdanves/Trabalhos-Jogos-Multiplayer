@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Mirror;
 
 public class NetworkManagerBomberman : NetworkManager
@@ -9,6 +10,19 @@ public class NetworkManagerBomberman : NetworkManager
     public GameObject m_explosionPrefab;
     public Transform m_leftSpawn;
     public Transform m_rightSpawn;
+    public GlobalStateManager m_globalManager;
+
+    public override void Awake()
+    {
+        SceneManager.LoadScene("Offline", LoadSceneMode.Additive);
+        base.Awake();
+    }
+
+    public void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
+    }
 
     public override void OnStartClient()
     {
@@ -26,6 +40,7 @@ public class NetworkManagerBomberman : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        m_globalManager.EndGame(1);
         base.OnServerDisconnect(conn);
     }
 }

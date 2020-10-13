@@ -6,6 +6,8 @@ using Mirror;
 public class Player : NetworkBehaviour
 {
     public float m_mspd = 5f;
+    public uint m_playerNum = 1;
+    private uint m_bombs = 3;
     private bool m_dead = false;
     [SyncVar]
     private bool m_walking = false;
@@ -23,6 +25,7 @@ public class Player : NetworkBehaviour
         m_rb = GetComponent<Rigidbody>();
         m_transform = transform;
         m_animator = m_transform.Find("PlayerModel").GetComponent<Animator>();
+        m_globalManager.RestartTimer();
     }
 
     void FixedUpdate()
@@ -31,9 +34,13 @@ public class Player : NetworkBehaviour
         if(!isLocalPlayer)
             return;
 
+        m_globalManager.PollTimer(m_playerNum);
         Move();
-        if(Input.GetKeyDown(KeyCode.Space) && CanDropBombs())
+        if(Input.GetKeyDown(KeyCode.Space) && CanDropBombs()) {
+            m_bombs--;
             DropBomb();
+            Invoke("AddBomb", 3f);
+        }
     }
 
     private void Move()
@@ -61,11 +68,18 @@ public class Player : NetworkBehaviour
         }
     }
 
+    private void AddBomb()
+    {
+        m_bombs++;
+    }
+
     private bool CanDropBombs()
     {
+        if(m_bombs <= 0)
+            return false;
         GameObject[] bombs = GameObject.FindGameObjectsWithTag("Bomb");
         foreach(GameObject bomb in bombs) {
-            if(Vector3.Distance(transform.position, bomb.transform.position) <= 1)
+            if(Vector3.Distance(transform.position, bomb.transform.position) < 1)
                 return false;
         }
         return true;
@@ -73,9 +87,11 @@ public class Player : NetworkBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        // this should be server-side only to avoid d-sync problems, but for now it works
         if(!m_dead && other.CompareTag("Explosion")) {
             m_dead = true;
-            m_globalManager.onPlayerDeath();
+            int winner = m_playerNum == 1 ? 2 : 1;
+            m_globalManager.EndGame(winner);
         }
     }
 

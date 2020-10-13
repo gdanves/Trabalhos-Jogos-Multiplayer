@@ -30,7 +30,7 @@ public class Bomb : NetworkBehaviour
         CreateExplosions(Vector3.left);
 
         GetComponent<MeshRenderer>().enabled = false;
-        m_exploded = true; 
+        m_exploded = true;
         transform.Find("Collider").gameObject.SetActive(false);
         Invoke("DestroyServerObject", .3f);
     }
