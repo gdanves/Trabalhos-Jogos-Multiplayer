@@ -9,6 +9,7 @@ public class Bomb : NetworkBehaviour
     public GameObject m_explosionPrefab;
     public LayerMask m_levelMask;
     private bool m_exploded = false;
+    private uint m_power = 3;
 
     void Start()
     {
@@ -21,7 +22,6 @@ public class Bomb : NetworkBehaviour
             return;
 
         AudioSource.PlayClipAtPoint(m_explosionSound, transform.position);
-
         NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position, Quaternion.identity));
 
         CreateExplosions(Vector3.forward);
@@ -35,6 +35,11 @@ public class Bomb : NetworkBehaviour
         Invoke("DestroyServerObject", .3f);
     }
 
+    public void SetPower(uint power)
+    {
+        m_power = power;
+    }
+
     public void OnTriggerEnter(Collider other)
     {
         if(!m_exploded && other.CompareTag("Explosion")) {
@@ -45,11 +50,9 @@ public class Bomb : NetworkBehaviour
 
     private void CreateExplosions(Vector3 direction)
     {
-        for(int i = 1; i < 3; i++) {
+        for(int i = 1; i < m_power; i++) {
             RaycastHit hit;
-
             Physics.Raycast(transform.position + new Vector3(0, .5f, 0), direction, out hit, i, m_levelMask);
-
             if(!hit.collider)
                 NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position + (i * direction), m_explosionPrefab.transform.rotation));
             else

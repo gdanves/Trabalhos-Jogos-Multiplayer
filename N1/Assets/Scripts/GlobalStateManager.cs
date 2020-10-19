@@ -4,15 +4,17 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using TMPro;
 
 public class GlobalStateManager : NetworkBehaviour
 {
     public List<Transform> randomBombPositions;
     public GameObject m_bombPrefab;
-    private Text m_timerText;
-    private Text m_winnerText;
+    private TextMeshProUGUI m_timerText;
+    private TextMeshProUGUI m_centerText;
     private float m_timeLeft = 120;
     private float m_randomBombExhaust = 0;
+    private bool m_gameRunning = false;
 
     private static GlobalStateManager _instance;
     public static GlobalStateManager Instance { get { return _instance; } }
@@ -31,7 +33,7 @@ public class GlobalStateManager : NetworkBehaviour
     {
         if(!m_timerText) {
             if(GameObject.Find("TimerText"))
-                m_timerText = GameObject.Find("TimerText").GetComponent<Text>();
+                m_timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();
             else
                 return;
         }
@@ -47,7 +49,10 @@ public class GlobalStateManager : NetworkBehaviour
                 } else
                     m_timerText.text = "";
             }
-        } else if(playerNum == 1) {
+        }
+
+        if(m_timeLeft <= 30 && NetworkServer.active) {
+            // sudden death mode
             m_randomBombExhaust -= Time.deltaTime;
             if(m_randomBombExhaust <= 0) {
                 m_randomBombExhaust = 1.5f;
@@ -61,11 +66,25 @@ public class GlobalStateManager : NetworkBehaviour
         m_timeLeft = 120;
     }
 
+    public void SetGameRunning(bool running)
+    {
+        if(!m_centerText)
+            m_centerText = GameObject.Find("CenterText").GetComponent<TextMeshProUGUI>();
+        if(!running)
+            m_centerText.text = "Esperando o Player 2...";
+        else
+            m_centerText.text = "";
+        m_gameRunning = running;
+    }
+
+    public bool IsGameRunning()
+    {
+        return m_gameRunning;
+    }
+
     public void EndGame(int winner)
     {
-        if(!m_winnerText)
-            m_winnerText = GameObject.Find("WinnerText").GetComponent<Text>();
-        m_winnerText.text = (winner == 1 ? "Vermelho" : "Azul") + " venceu!";
+        m_centerText.text = (winner == 1 ? "Vermelho" : "Azul") + " venceu!";
         Time.timeScale = .1f;
         Invoke("StopHost", .2f);
     }
