@@ -102,7 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  m_explosionSound: {fileID: 8300000, guid: a0d438c128020ae419d43d4499594a46, type: 3}
+  m_explosionSound: {fileID: 8300000, guid: d86b47b08d87975dcafdf5218001f86c, type: 3}
   m_explosionPrefab: {fileID: 177540, guid: 69dfce71c987ee94ebd40421847e3c8e, type: 3}
   m_levelMask:
     serializedVersion: 2
@@ -133,9 +133,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 45cdf6aee50e4384b9a4915eca2859f4, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 389454a972422ff478465cce629fdcbb, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.75
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -146,7 +146,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -155,22 +155,22 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
+      value: 0.99683
+      inSlope: 0.02049554
+      outSlope: 0.02049554
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.002
       value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -194,7 +194,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

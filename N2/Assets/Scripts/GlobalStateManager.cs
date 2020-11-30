@@ -72,7 +72,7 @@ public class GlobalStateManager : NetworkBehaviour
             m_centerText = GameObject.Find("CenterText").GetComponent<TextMeshProUGUI>();
         if(!running)
             m_centerText.text = "Esperando o Player 2...";
-        else
+        else if(running != m_gameRunning)
             m_centerText.text = "";
         m_gameRunning = running;
     }
@@ -84,15 +84,18 @@ public class GlobalStateManager : NetworkBehaviour
 
     public void EndGame(int winner)
     {
+        // temp fix to avoid calling it twice
+        if(Time.timeScale < 1)
+            return;
         m_centerText.text = (winner == 1 ? "Vermelho" : "Azul") + " venceu!";
         Time.timeScale = .1f;
-        Invoke("StopHost", .2f);
+        Invoke("StopHost", .35f);
     }
 
     public void StopHost()
     {
         RestartTimer();
-        Time.timeScale = 1;
         NetworkManager.singleton.StopHost();
+        Time.timeScale = 1;
     }
 }

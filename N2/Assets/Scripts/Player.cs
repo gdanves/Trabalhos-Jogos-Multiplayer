@@ -20,9 +20,14 @@ public class Player : NetworkBehaviour
     // references
     public GameObject m_bombPrefab;
     public GlobalStateManager m_globalManager;
+    public AudioClip m_sfxCollect;
+    public AudioClip m_sfxDeath;
+    public AudioClip m_sfxDefeat;
+    public AudioClip m_sfxVictory;
     private Rigidbody m_rb;
     private Transform m_transform;
     private Animator m_animator;
+    private AudioSource m_audioSource;
 
     void Start()
     {
@@ -32,6 +37,8 @@ public class Player : NetworkBehaviour
         m_rb = GetComponent<Rigidbody>();
         m_transform = transform;
         m_animator = m_transform.Find("PlayerModel").GetComponent<Animator>();
+        m_audioSource = GetComponent<AudioSource>();
+
         m_globalManager.RestartTimer();
 
         // setup power-ups
@@ -111,12 +118,16 @@ public class Player : NetworkBehaviour
 
         // this should be server-side only to avoid d-sync problems, but for now it works
         if(other.CompareTag("Explosion")) {
+            m_audioSource.PlayOneShot(m_sfxDeath);
+            m_audioSource.clip = isLocalPlayer ? m_sfxDefeat : m_sfxVictory;
+            m_audioSource.PlayDelayed(0.1f);
             m_dead = true;
             int winner = m_playerNum == 1 ? 2 : 1;
             m_globalManager.EndGame(winner);
         } else if(other.CompareTag("Collectable")) {
             int collectableId = other.GetComponent<Collectable>().GetId();
             Destroy(other.gameObject);
+            m_audioSource.PlayOneShot(m_sfxCollect);
             switch(collectableId) {
                 case 1:
                     m_power++;

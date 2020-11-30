@@ -8,20 +8,23 @@ public class Bomb : NetworkBehaviour
     public AudioClip m_explosionSound;
     public GameObject m_explosionPrefab;
     public LayerMask m_levelMask;
+    private AudioSource m_audioSource;
     private bool m_exploded = false;
     private uint m_power = 3;
 
     void Start()
     {
+        m_audioSource = GetComponent<AudioSource>();
         Invoke("Explode", 3f);
     }
 
     void Explode()
     {
+        m_audioSource.clip = m_explosionSound;
+        m_audioSource.Play();
         if(!NetworkServer.active)
             return;
 
-        AudioSource.PlayClipAtPoint(m_explosionSound, transform.position);
         NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position, Quaternion.identity));
 
         CreateExplosions(Vector3.forward);
