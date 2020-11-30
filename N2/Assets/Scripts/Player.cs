@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 using Mirror;
 
@@ -11,14 +12,15 @@ public class Player : NetworkBehaviour
     private float m_speed;
     private uint m_power;
     private uint m_bombs;
+    private int m_bombType;
 
     // states
-    private bool m_dead = false;
+    private bool m_dead;
     [SyncVar]
-    private bool m_walking = false;
+    private bool m_walking;
 
     // references
-    public GameObject m_bombPrefab;
+    public List<GameObject> m_bombPrefabs;
     public GlobalStateManager m_globalManager;
     public AudioClip m_sfxCollect;
     public AudioClip m_sfxDeath;
@@ -45,6 +47,11 @@ public class Player : NetworkBehaviour
         m_speed = 5;
         m_power = 3;
         m_bombs = 2;
+        m_bombType = 0;
+
+        // setup states
+        m_dead = false;
+        m_walking = false;
     }
 
     void FixedUpdate()
@@ -135,6 +142,9 @@ public class Player : NetworkBehaviour
                 case 2:
                     m_speed += 2.5f;
                     break;
+                case 3:
+                    m_bombType = 1;
+                    break;
                 default:
                     m_bombs++;
                     break;
@@ -147,10 +157,11 @@ public class Player : NetworkBehaviour
     [Command]
     private void DropBomb(uint power)
     {
-        GameObject bomb = Instantiate(m_bombPrefab,
-            new Vector3(Mathf.RoundToInt(m_transform.position.x), m_bombPrefab.transform.position.y,
-            Mathf.RoundToInt(m_transform.position.z)), m_bombPrefab.transform.rotation);
+        GameObject bomb = Instantiate(m_bombPrefabs[m_bombType],
+            new Vector3(Mathf.RoundToInt(m_transform.position.x), m_bombPrefabs[m_bombType].transform.position.y,
+            Mathf.RoundToInt(m_transform.position.z)), m_bombPrefabs[m_bombType].transform.rotation);
         bomb.GetComponent<Bomb>().SetPower(power);
+        bomb.GetComponent<Bomb>().SetType(m_bombType);
         NetworkServer.Spawn(bomb);
     }
 

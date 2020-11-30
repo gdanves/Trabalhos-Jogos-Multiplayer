@@ -65,6 +65,8 @@ MonoBehaviour:
   - {fileID: 8017925262673464702, guid: 218a1457d88b85359ad29573bd561221, type: 3}
   - {fileID: 357102711981471720, guid: 20ecc4adcd9fd497e8756fa1f83fabca, type: 3}
   - {fileID: 1274531461765452559, guid: 535f4acdb0b5a80deb9e102f0d49bc10, type: 3}
+  - {fileID: 7385152401845500536, guid: 4936fad2e9784ca8aae1bcfd870c1f6f, type: 3}
+  - {fileID: 1125752693805519424, guid: 2ce87c7b9a16e6717af2bf61c68bc9b7, type: 3}
   playerPrefab2: {fileID: 3675302474291324838, guid: 6ab921f8d90e43e43a20029d71815f87, type: 3}
   m_bombPrefab: {fileID: 124052, guid: 6291891f72f724c4eae6be6052e78735, type: 3}
   m_explosionPrefab: {fileID: 177540, guid: 69dfce71c987ee94ebd40421847e3c8e, type: 3}

@@ -584,7 +584,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_playerNum: 1
-  m_bombPrefab: {fileID: 124052, guid: 6291891f72f724c4eae6be6052e78735, type: 3}
+  m_bombPrefabs:
+  - {fileID: 124052, guid: 6291891f72f724c4eae6be6052e78735, type: 3}
+  - {fileID: 7385152401845500536, guid: 4936fad2e9784ca8aae1bcfd870c1f6f, type: 3}
   m_globalManager: {fileID: 9179804148783808676, guid: 77a2da9fe2f47b69e8c568c696041e2c, type: 3}
   m_sfxCollect: {fileID: 8300000, guid: a2e350509e0dbf9f4867bc7b51a6934d, type: 3}
   m_sfxDeath: {fileID: 8300000, guid: 6dae1e8fbb11abfde952f233ce8895c2, type: 3}

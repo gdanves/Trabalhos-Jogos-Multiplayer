@@ -11,6 +11,7 @@ public class Bomb : NetworkBehaviour
     private AudioSource m_audioSource;
     private bool m_exploded = false;
     private uint m_power = 3;
+    private int m_type = 0;
 
     void Start()
     {
@@ -33,6 +34,12 @@ public class Bomb : NetworkBehaviour
         CreateExplosions(Vector3.left);
 
         GetComponent<MeshRenderer>().enabled = false;
+        foreach(Transform child in transform) {
+            MeshRenderer mesh = child.GetComponent<MeshRenderer>();
+            if(mesh)
+                mesh.enabled = false;
+        }
+
         m_exploded = true;
         transform.Find("Collider").gameObject.SetActive(false);
         Invoke("DestroyServerObject", .3f);
@@ -41,6 +48,11 @@ public class Bomb : NetworkBehaviour
     public void SetPower(uint power)
     {
         m_power = power;
+    }
+
+    public void SetType(int type)
+    {
+        m_type = type;
     }
 
     public void OnTriggerEnter(Collider other)
@@ -56,9 +68,8 @@ public class Bomb : NetworkBehaviour
         for(int i = 1; i < m_power; i++) {
             RaycastHit hit;
             Physics.Raycast(transform.position + new Vector3(0, .5f, 0), direction, out hit, i, m_levelMask);
-            if(!hit.collider)
-                NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position + (i * direction), m_explosionPrefab.transform.rotation));
-            else
+            NetworkServer.Spawn(Instantiate(m_explosionPrefab, transform.position + (i * direction), m_explosionPrefab.transform.rotation));
+            if(m_type != 1 && hit.collider)
                 break;
         }
     }
